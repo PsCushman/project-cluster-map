@@ -7,7 +7,7 @@ Feel free to explore the whole project by following the link below:
 
 https://github.com/PsCushman/resto-scores-and-more
 
-This map provides a road map to create a searchable Cluster Map. Please note that you will need to create an invisible marker layer to search because the plug used is not suitable for Cluster Maps.
+This map provides a road map to create a searchable Cluster Map. Please note that you will need to create an invisible marker layer to search because the plug in is not suitable for Cluster Maps.
 
 ![Screen Shot 2023-07-12 at 9 06 19 PM](https://github.com/PsCushman/project-cluster-map/assets/122395437/2b6fab83-fc2c-40af-8771-17dd07fedbce)
 
