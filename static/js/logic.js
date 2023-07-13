@@ -5,37 +5,6 @@
 
 // Store the API query variables.
 let baseURL = "https://data.sfgov.org/resource/pyih-qa8i.json?";
-// let url = baseURL + "$$app_token=" + apiToken;
-
-fetch(baseURL)
-  .then(response => response.json())
-  .then(data => {
-    var markersLayer = new L.LayerGroup(); // Layer containing searched elements
-    myMap.addLayer(markersLayer);
-
-    var controlSearch = new L.Control.Search({
-      position: 'topright',
-      layer: markersLayer,
-      initial: false,
-      zoom: 20,
-      marker: false
-    });
-
-    myMap.addControl(controlSearch);
-
-    // Populate map with markers from data
-    data.forEach(restaurant => {
-      var title = restaurant.business_name; // Value searched
-      var latitude = parseFloat(restaurant.business_latitude); // Latitude
-      var longitude = parseFloat(restaurant.business_longitude); // Longitude
-
-      if (!isNaN(latitude) && !isNaN(longitude)) {
-        var marker = new L.Marker(new L.latLng(latitude, longitude), { title: title });
-        markersLayer.addLayer(marker);
-        marker.setOpacity(0); // Set marker opacity to 0 to make it invisible
-      }
-    });
-  });
 
 // Adding the tile layer
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -48,22 +17,39 @@ let markers = [];
 // Create a marker cluster group
 let markerCluster = L.markerClusterGroup({
   disableClusteringAtZoom: 18, // Set the zoom level at which clustering is disabled
-  spiderfyOnMaxZoom: true, // Enable spiderfying of markers on max zoom
 });
 
 // Get the data with fetch.
 fetch(baseURL)
   .then(response => response.json())
   .then(data => {
+
+    var markersLayer = new L.LayerGroup(); // Layer containing searched elements
+
+    var controlSearch = new L.Control.Search({
+      position: 'topright',
+      layer: markersLayer,
+      initial: false,
+      zoom: 20,
+      marker: false
+    });
+
     // Loop through the data
     data.forEach(restaurant => {
-      // Get the latitude and longitude
-      let latitude = parseFloat(restaurant.business_latitude);
-      let longitude = parseFloat(restaurant.business_longitude);
-      let inspectionScore = restaurant.inspection_score;
 
+      var title = restaurant.business_name; // Value searched
+      var latitude = parseFloat(restaurant.business_latitude); // Latitude
+      var longitude = parseFloat(restaurant.business_longitude); // Longitude
+      let inspectionScore = restaurant.inspection_score;
       let scoreColor;
       let scoreLabel;
+
+      if (!isNaN(latitude) && !isNaN(longitude)) {
+        var marker = new L.Marker(new L.latLng(latitude, longitude), { title: title });
+        markersLayer.addLayer(marker);
+        marker.setOpacity(0); // Set marker opacity to 0 to make it invisible
+      }
+      
       if (typeof inspectionScore === 'undefined' || isNaN(inspectionScore)) {
         scoreColor = 'gray';
         scoreLabel = 'Unrated';
@@ -90,14 +76,17 @@ fetch(baseURL)
                      </div>`);
 
         // Add the marker to the array and the cluster group
-        markers.push(marker);
         markerCluster.addLayer(marker);
+        markers.push(marker);
+        
       }
     });
 
-    // Add the marker cluster group to the map
+    // Add the marker groups and control search cluster group to the map
+    myMap.addControl(controlSearch);
+    myMap.addLayer(markersLayer);
     myMap.addLayer(markerCluster);
-
+   
 
     // Create the legend control
     var controlScores = L.control({ position: 'topright' });
